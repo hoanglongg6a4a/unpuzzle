@@ -15,6 +15,7 @@ public class RightPuzzle : Puzzle
         if (transform.position.x > rightScreenLimit + 0.8f)
         {
             isTouched = false;
+            gameObject.SetActive(false);
         }
     }
 }

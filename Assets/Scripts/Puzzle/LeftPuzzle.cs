@@ -13,9 +13,10 @@ public class LeftPuzzle : Puzzle
             targetPosition = transform.position + Vector3.left;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * base.speed);   
         }
-        if (transform.position.x > rightScreenLimit + 0.8f)
+        if (transform.position.x < leftScreenLimit - 0.8f)
         {
             isTouched = false;
+            gameObject.SetActive(false);
         }
     }
 }

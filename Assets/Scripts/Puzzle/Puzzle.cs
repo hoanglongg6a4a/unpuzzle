@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
 public abstract class Puzzle : MonoBehaviour
@@ -26,7 +27,19 @@ public abstract class Puzzle : MonoBehaviour
         this.speed = speed;
     }    
     private void Update()
-    { 
+    {
+        CheckOutScreen();
+    }
+    public void CheckOutScreen()
+    {
+        if(transform.position.x > rightScreenLimit || transform.position.x < leftScreenLimit)
+        {
+            gameObject.SetActive(false);
+        }
+        if(transform.position.y > upScreenLimit || transform.position.y < downScreenLimit)
+        {
+            gameObject.SetActive(false);
+        }
     }
     private void OnCollisionEnter2D(Collision2D target)
     {

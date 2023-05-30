@@ -13,9 +13,10 @@ public class UpPuzzle : Puzzle
             targetPosition = transform.position + Vector3.up;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * base.speed);   
         }
-        if (transform.position.x > rightScreenLimit + 0.8f)
+        if (transform.position.y > upScreenLimit )
         {
             isTouched = false;
+            gameObject.SetActive(false);
         }
     }
 }

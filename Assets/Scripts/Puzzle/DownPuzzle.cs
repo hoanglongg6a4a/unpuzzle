@@ -16,6 +16,7 @@ public class DownPuzzle : Puzzle
         if (transform.position.y < downScreenLimit - 0.8f)
         {
             isTouched = false;
+            gameObject.SetActive(false);
         }
     }
 }
