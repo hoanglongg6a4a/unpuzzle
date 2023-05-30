@@ -9,13 +9,14 @@ public class GameController : MonoBehaviour
     [SerializeField] GameView view;
     [SerializeField] GameAudio audio;
     [Header("Preference")]
-    [SerializeField] Puzzle puzzelPrefab;
+    [SerializeField] SpawnPuzzle spawnPuzzle;
     private Camera mainCamera;
     //[SerializeField] private SpawnBullet spawnBullet;
     private Puzzle puzzle;
     private void Awake()
     {
         mainCamera = Camera.main;
+        spawnPuzzle.SpawnPuzzles();
     }
     private void Update()
     {
