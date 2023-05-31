@@ -370,11 +370,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b36499e45f0f9149b58a401175cecb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPuzzleList:
-  - {fileID: 7284361508602690225, guid: ce9a0ee1696c2ae43999094bb261ed48, type: 3}
-  - {fileID: 7218555861209567644, guid: fa47fee9fb0194947a8a32534691b0aa, type: 3}
-  - {fileID: 7482101758940367962, guid: 21af632c6732dd64db9b9760377075bd, type: 3}
-  - {fileID: 3380310480542732545, guid: 305cd5f738b2c6f439946ba2634a0b98, type: 3}
+  rows: 5
+  col: 5
+  puzzlePrefab: {fileID: 5532958332714601892, guid: 305cd5f738b2c6f439946ba2634a0b98, type: 3}
+  cellsize: 1
 --- !u!1 &483152878
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,7 +421,7 @@ MonoBehaviour:
   model: {fileID: 45797318}
   view: {fileID: 1460113254}
   audio: {fileID: 85900546}
-  spawnPuzzle: {fileID: 445446766}
+  spawnPuzzle: {fileID: 0}
 --- !u!1 &1460113252
 GameObject:
   m_ObjectHideFlags: 0
