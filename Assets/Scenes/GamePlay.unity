@@ -371,9 +371,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPuzzleList:
-  - {fileID: 7482101758940367962, guid: 21af632c6732dd64db9b9760377075bd, type: 3}
-  - {fileID: 7218555861209567644, guid: fa47fee9fb0194947a8a32534691b0aa, type: 3}
   - {fileID: 7284361508602690225, guid: ce9a0ee1696c2ae43999094bb261ed48, type: 3}
+  - {fileID: 7218555861209567644, guid: fa47fee9fb0194947a8a32534691b0aa, type: 3}
+  - {fileID: 7482101758940367962, guid: 21af632c6732dd64db9b9760377075bd, type: 3}
   - {fileID: 3380310480542732545, guid: 305cd5f738b2c6f439946ba2634a0b98, type: 3}
 --- !u!1 &483152878
 GameObject:

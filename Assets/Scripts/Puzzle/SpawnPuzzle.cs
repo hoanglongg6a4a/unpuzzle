@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +7,10 @@ public class SpawnPuzzle : MonoBehaviour
 {
     [SerializeField]
     private List<Puzzle> spawnPuzzleList;
+    private Puzzle[,] grid;
     private int rows; 
     private int columns;
     private bool[,] blocked;
-    private Puzzle[,] grid;
     private List<Puzzle> puzzlePrefabs = new List<Puzzle>();
     // Start is called before the first frame update
     void Start()
@@ -29,20 +30,18 @@ public class SpawnPuzzle : MonoBehaviour
     }
     public void AddPrefab(Puzzle prefab, int instanceCount)
     {
-        for (int i = 0; i < spawnPuzzleList.Count; i++)
+        for (int i = 0; i < instanceCount-1; i++)
         {
             Puzzle instance = Instantiate(prefab);
             instance.gameObject.SetActive(false);
             puzzlePrefabs.Add(instance);
         }
     }
-
-    public Puzzle GetRandomPrefab()
+  /*  public Puzzle GetRandomPrefab()
     {
         Puzzle randomPrefab = puzzlePrefabs[Random.Range(0, puzzlePrefabs.Count)];
         return randomPrefab;
-    }
-
+    }*/
     public Puzzle GetInstanceFromPool()
     { 
         foreach (Puzzle instance in puzzlePrefabs)
@@ -55,13 +54,12 @@ public class SpawnPuzzle : MonoBehaviour
                 return instance;
             }
         }
-
         return null; 
     }
     public Vector3 GetCellPosition(int row, int column)
     {
-        float cellSize = 0.8f;
-        Vector3 origin = new Vector3(-columns / 2f, -rows / 2f, 0f);
+        float cellSize = 1f;
+        Vector3 origin = new Vector3(-columns / 3f, -rows / 3f, 0f);
         Vector3 cellPosition = origin + new Vector3(column, row, 0f) * cellSize;
         return cellPosition;
     }
@@ -74,16 +72,50 @@ public class SpawnPuzzle : MonoBehaviour
                 Puzzle puzzle = GetInstanceFromPool();
                 if (puzzle != null)
                 {           
-                    grid[row, column] = puzzle;                
+                    grid[row, column] = puzzle;
+                    puzzle.SetRowColumn(row, column);
                     puzzle.transform.position = GetCellPosition(row, column);                 
                     puzzle.gameObject.SetActive(true);
                 }
             }
         }
     }
+    public void DeletePos(int row, int column)
+    {
+        grid[row, column] = null;
+    }
+    public void SetPuzzlePosition(Puzzle puzzle, int newRow, int newColumn)
+    {
+        grid[puzzle.GetRow(), puzzle.GetColumn()] = null;
+        puzzle.SetRowColumn(newRow, newColumn);
+        grid[newRow, newColumn] = puzzle;
+    }
+    public int IsPositionEmpty(int row, int column)
+    {
+        int numRows = grid.GetLength(0);
+        int numColumns = grid.GetLength(1);
+        Debug.Log(row + "," + column);
+        Debug.Log(numRows+","+numColumns);
+
+        if (row < 0 || row >= numRows || column < 0 || column >= numColumns)
+        {
+            Debug.Log("Bay ra khỏi map");
+            return 0;
+        }
+
+        if (grid[row, column] == null)
+        {
+            Debug.Log("Tiến tới");
+            return 1;
+        }
+        else
+        {
+            Debug.Log("Bị kẹt");
+            return 2;
+        }
+    }
     // Update is called once per frame
     void Update()
-    {
-        
+    {       
     }
 }

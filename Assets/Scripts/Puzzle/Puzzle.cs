@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting;
+﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
@@ -11,6 +12,12 @@ public abstract class Puzzle : MonoBehaviour
     protected float upScreenLimit;
     protected float downScreenLimit;
     protected float speed;
+    protected int row;
+    protected int column;
+    protected Func<int,int,int> IsPositionEmpty;
+    protected Func<int, int, Vector3> GetCellPosition;
+    protected Action<Puzzle, int, int> SetPos;
+    protected Action<int, int> DeletePos;
     private void Start()
     {
         float worldHeight = Camera.main.orthographicSize * 2f;
@@ -22,24 +29,29 @@ public abstract class Puzzle : MonoBehaviour
         upScreenLimit = maxY;
         downScreenLimit = -maxY;
     }
-    public void init(float speed)
+    public void SetRowColumn(int row,int column)
+    {
+        this.row = row;
+        this.column = column;
+    }  
+    public int GetColumn()
+    {
+        return this.column;
+    }  
+    public int GetRow()
+    {
+        return this.row;
+    }    
+    public void init(float speed,Func<int, int, int> IsPositionEmpty,Func<int, int, Vector3>GetCellPosition, Action<Puzzle, int, int> SetPos, Action<int, int> DeletePos)
     {
         this.speed = speed;
+        this.IsPositionEmpty = IsPositionEmpty;
+        this.GetCellPosition = GetCellPosition;   
+        this.SetPos = SetPos;
+        this.DeletePos = DeletePos;
     }    
     private void Update()
     {
-        CheckOutScreen();
-    }
-    public void CheckOutScreen()
-    {
-        if(transform.position.x > rightScreenLimit || transform.position.x < leftScreenLimit)
-        {
-            gameObject.SetActive(false);
-        }
-        if(transform.position.y > upScreenLimit || transform.position.y < downScreenLimit)
-        {
-            gameObject.SetActive(false);
-        }
     }
     private void OnCollisionEnter2D(Collision2D target)
     {
@@ -50,7 +62,7 @@ public abstract class Puzzle : MonoBehaviour
     }
     private void OnMouseDown()
     {
-       Move();
+      Move();
     }
     public abstract void Move();
 }

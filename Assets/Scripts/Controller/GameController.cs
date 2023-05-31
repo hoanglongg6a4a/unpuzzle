@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour
         Puzzle puzzleClick = CheckClick();
         if (puzzleClick != null)
         {
-            puzzleObject = puzzleClick.gameObject; // Gán game object của đối tượng Puzzle cho puzzleObject
+            puzzleObject = puzzleClick.gameObject; 
         }
         if (puzzleObject != null)
         {
@@ -42,7 +42,7 @@ public class GameController : MonoBehaviour
 
                 if (puzzle != null) // Kiểm tra nếu component Puzzle tồn tại
                 {
-                    puzzle.init(model.Speed); // Gọi phương thức init để bắt đầu di chuyển
+                    puzzle.init(model.Speed,spawnPuzzle.IsPositionEmpty,spawnPuzzle.GetCellPosition,spawnPuzzle.SetPuzzlePosition,spawnPuzzle.DeletePos); // Gọi phương thức init để bắt đầu di chuyển
                     return puzzle; // Trả về đối tượng Puzzle được click vào
                 }
             }
