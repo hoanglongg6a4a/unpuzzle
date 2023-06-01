@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Data.Common;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 public enum NodeType
 {
-    None , Left , Right , Up , Down
+    None , Left , Right , Up , Down , Rotate , Saw
 }
 public class GameController : MonoBehaviour
 {
@@ -15,14 +14,24 @@ public class GameController : MonoBehaviour
     [SerializeField] GameAudio audio;
     [Header("Preference")]
     [SerializeField] SpawnPuzzle spawnPuzzle;
-    private Camera mainCamera;
+    [SerializeField] private List<Level> levels;
     private void Awake()
     {
-        mainCamera = Camera.main;
-        //spawnPuzzle.init(5,5,1);
+        spawnPuzzle.initTable(model.Row, model.Col, model.Cellsize, levels[0].getList(),view.SetMoveCount);
     }
+    public void UseHammer()
+    {
+        spawnPuzzle.UseHammer = true;
+    }
+    public void UseBomb()
+    {
+        spawnPuzzle.UseBomb = true;
+    }
+    public void Restart()
+    {
+        SceneManager.LoadScene("GamePlay");
+    }    
     private void Update()
     {
- 
     }
 }
