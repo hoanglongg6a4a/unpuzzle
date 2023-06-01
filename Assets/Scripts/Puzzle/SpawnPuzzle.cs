@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class SpawnPuzzle : MonoBehaviour
 {
@@ -17,7 +18,6 @@ public class SpawnPuzzle : MonoBehaviour
     private Action<int> SetCountMove;
     public bool UseHammer;
     public bool UseBomb;
-
     // Start is called before the first frame update
     private void Start()
     {
@@ -109,7 +109,7 @@ public class SpawnPuzzle : MonoBehaviour
                 if (node.NodeType == NodeType.Saw)
                 {
                     return;
-                }    
+                }
                 Vector2Int movePos = NodeMovePosition(node);
                 Vector2 destinition;
                 if(movePos == node.position)
@@ -146,23 +146,28 @@ public class SpawnPuzzle : MonoBehaviour
         // Xoá vị trí cũ của các node xung quanh (nếu tồn tại)
         if (nodeUp != null)
         {
-            nodesDictObj[nodeUp].transform.position = tables[positionRight.x, positionRight.y];
+            //nodesDictObj[nodeUp].transform.position = tables[positionRight.x, positionRight.y];
             nodes[nodes.IndexOf(nodeUp)].position = positionRight;
+            StartCoroutine(MoveNode(nodesDictObj[nodeUp], tables[positionRight.x, positionRight.y]));         
         }
         if (nodeRight != null)
         {
-            nodesDictObj[nodeRight].transform.position = tables[positionDown.x, positionDown.y];
+            //nodesDictObj[nodeRight].transform.position = tables[positionDown.x, positionDown.y];
             nodes[nodes.IndexOf(nodeRight)].position = positionDown;
+            StartCoroutine(MoveNode(nodesDictObj[nodeRight], tables[positionDown.x, positionDown.y]));         
         }
         if (nodeDown != null)
         {
-            nodesDictObj[nodeDown].transform.position = tables[positionLeft.x, positionLeft.y];
             nodes[nodes.IndexOf(nodeDown)].position = positionLeft;
+            StartCoroutine(MoveNode(nodesDictObj[nodeDown],tables[positionLeft.x, positionLeft.y]));
+           // nodesDictObj[nodeDown].transform.position = tables[positionLeft.x, positionLeft.y];
+           
         }
         if (nodeLeft != null)
         {
-            nodesDictObj[nodeLeft].transform.position = tables[positionUp.x, positionUp.y];
             nodes[nodes.IndexOf(nodeLeft)].position = positionUp;
+            StartCoroutine(MoveNode(nodesDictObj[nodeLeft], tables[positionUp.x, positionUp.y]));
+            //nodesDictObj[nodeLeft].transform.position = tables[positionUp.x, positionUp.y];       
         }
     }
     private void HideAndRemoveSurroundingNodes(Node node)
@@ -214,14 +219,14 @@ public class SpawnPuzzle : MonoBehaviour
     {
         while (node.transform.position != destination)
         {
-            Vector2 newPosition = Vector2.MoveTowards(node.transform.position, destination, 5 * Time.deltaTime);
+            Vector2 newPosition = Vector2.MoveTowards(node.transform.position, destination, 8 * Time.deltaTime);
             node.transform.position = newPosition;
 
             yield return null; 
         }
     }
     public Vector2Int NodeMovePosition(Node node)
-    {
+    {      
         Vector2Int direction = new();
         switch (node.NodeType)
         {
@@ -257,7 +262,7 @@ public class SpawnPuzzle : MonoBehaviour
                     break;
                 }
                 return curPos -= direction;
-            }
+            } 
         }
         return Vector2Int.one*999;
     }    
