@@ -11,7 +11,8 @@ public class GameView : MonoBehaviour
     private const string Level = "Level";
     private void Awake()
     {
-        
+        int levelGame = PlayerPrefs.GetInt(Level);
+        LevelNum.text = levelGame.ToString();
     }
     public void SetMoveCount(int count)
     {
@@ -24,10 +25,5 @@ public class GameView : MonoBehaviour
     public void ShowWinPanel()
     {
         WinPanel.SetActive(true);
-    }
-    public void ShowLevel()
-    {
-        int levelGame = PlayerPrefs.GetInt(Level);
-        LevelNum.text = levelGame.ToString();
-    }    
+    } 
 }

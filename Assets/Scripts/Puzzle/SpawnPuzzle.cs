@@ -22,9 +22,17 @@ public class SpawnPuzzle : MonoBehaviour
     private int countMove;
     private bool endGame;
     private float MaxX,MinX,MaxY,MinY;
+    private const string Level = "Level";
+    private int levelGame;
+    private bool check;
+    private void Awake()
+    {
+        check = false;
+    }
     // Start is called before the first frame update
     private void Start()
     {
+        levelGame = PlayerPrefs.GetInt(Level);
         float worldHeight = Camera.main.orthographicSize * 2f;
         float worldWidth = worldHeight * Screen.width / Screen.height;
         MaxX = worldWidth / 2;
@@ -88,34 +96,36 @@ public class SpawnPuzzle : MonoBehaviour
         {
             node.SetActive(false);
         }
-    }    
+    }
     private void Update()
     {
-        if (endGame) return;
-        Vector3 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-       
-        if (CheckAllObjectsHidden(nodesDictObj))
+        if (CheckAllObjectsHidden(nodesDictObj)&& !check)
         {
             ShowWinPanel();
+            levelGame++;
+            PlayerPrefs.SetInt("Level", levelGame);
+            check = true;
+
         }
+        CheckMoveCount(countMove);
         /*  if (CheckAllNodesBlocked(nodes))
           {
               Debug.Log("Không thể di chuyển tất cả các node!");
           }*/
-        CheckMoveCount(countMove);
-        if (Input.GetMouseButtonDown(0))
-        {          
-            Collider2D collider2D = Physics2D.OverlapPoint(touchPos);
-            if (collider2D != null)
+    }
+    public void TouchAction(Collider2D collider2D)
+    {
+        if (endGame) return;
+        if (collider2D != null)
             {
                 Node node;
                 Vector2Int temp = new Vector2Int(Mathf.RoundToInt(collider2D.transform.position.x / cellsize + rows / 2), Mathf.RoundToInt(-collider2D.transform.position.y / cellsize + col / 2));
-                node = nodes.Find(n => n.position == new Vector2(temp.x, temp.y)); 
-                if(node.NodeType != NodeType.Saw)
+                node = nodes.Find(n => n.position == new Vector2(temp.x, temp.y));
+                if (node.NodeType != NodeType.Saw)
                 {
                     countMove--;
                     SetCountMove(countMove);
-                }    
+                }
                 if (UseBomb && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
                 {
                     HideAndRemoveSurroundingNodes(node);
@@ -160,9 +170,9 @@ public class SpawnPuzzle : MonoBehaviour
                     destinition = tables[movePos.x, movePos.y];
                     nodes[nodes.IndexOf(node)].position = movePos;
                 }
-                StartCoroutine(MoveNode(nodesDictObj[node], destinition));           
+                StartCoroutine(MoveNode(nodesDictObj[node], destinition));
             }
-        }
+        
     }
     private void CheckMoveCount(int count)
     {

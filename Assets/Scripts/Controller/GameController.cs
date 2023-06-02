@@ -20,6 +20,7 @@ public class GameController : MonoBehaviour
     {
         IsGameStartedForTheFirstTime();
         int levelGame = PlayerPrefs.GetInt(Level);
+        Debug.Log(levelGame);
         spawnPuzzle.initTable(model.Row, model.Col, model.Cellsize, levels[levelGame].getList(),view.SetMoveCount,view.ShowEndPanel,view.ShowWinPanel);
     }
     private void IsGameStartedForTheFirstTime()
@@ -44,5 +45,11 @@ public class GameController : MonoBehaviour
     }    
     private void Update()
     {
+        Vector3 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (Input.GetMouseButtonDown(0))
+        {
+            Collider2D collider2D = Physics2D.OverlapPoint(touchPos);
+            spawnPuzzle. TouchAction(collider2D);
+        }
     }
 }
