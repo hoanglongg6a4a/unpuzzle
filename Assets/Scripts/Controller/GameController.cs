@@ -15,9 +15,20 @@ public class GameController : MonoBehaviour
     [Header("Preference")]
     [SerializeField] SpawnPuzzle spawnPuzzle;
     [SerializeField] private List<Level> levels;
+    private const string Level = "Level";
     private void Awake()
     {
-        spawnPuzzle.initTable(model.Row, model.Col, model.Cellsize, levels[0].getList(),view.SetMoveCount);
+        IsGameStartedForTheFirstTime();
+        int levelGame = PlayerPrefs.GetInt(Level);
+        spawnPuzzle.initTable(model.Row, model.Col, model.Cellsize, levels[levelGame].getList(),view.SetMoveCount,view.ShowEndPanel,view.ShowWinPanel);
+    }
+    private void IsGameStartedForTheFirstTime()
+    {
+        if (!PlayerPrefs.HasKey("IsGameStartedForTheFirstTime"))
+        {
+            PlayerPrefs.SetInt(Level, 0);
+            PlayerPrefs.SetInt("IsGameStartedForTheFirstTime", 0);
+        }
     }
     public void UseHammer()
     {
