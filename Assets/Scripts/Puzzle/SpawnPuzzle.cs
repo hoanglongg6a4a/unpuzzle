@@ -16,13 +16,12 @@ public class SpawnPuzzle : MonoBehaviour
     private List<Node> nodes;
     private Dictionary<Node, GameObject> nodesDictObj;
     private Action<int> SetCountMoveView;
-    //private Action ShowLosePanel;
-    public bool UseHammer;
-    public bool UseBomb;
     private bool IsDesTroy=false;
     private int countMove;
     private bool endGame=false;
     private float MaxX,MinX,MaxY,MinY;
+    public bool UseHammer;  // Dang Test nen chua chinh lai private 
+    public bool UseBomb;    // Dang Test nen chua chinh lai private 
     // Start is called before the first frame update
     private void Start()
     {
