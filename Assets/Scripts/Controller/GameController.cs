@@ -16,12 +16,17 @@ public class GameController : MonoBehaviour
     [SerializeField] SpawnPuzzle spawnPuzzle;
     [SerializeField] private List<Level> levels;
     private const string Level = "Level";
+    private int levelGame;
+    private int CountMove;
     private void Awake()
     {
-        IsGameStartedForTheFirstTime();
-        int levelGame = PlayerPrefs.GetInt(Level);
+        CountMove = 20;
+        view.SetMoveCount(CountMove);
+        PlayerPrefs.SetInt(Level, 0);
+        //IsGameStartedForTheFirstTime();
+        levelGame = PlayerPrefs.GetInt(Level);
         Debug.Log(levelGame);
-        spawnPuzzle.initTable(model.Row, model.Col, model.Cellsize, levels[levelGame].getList(),view.SetMoveCount,view.ShowEndPanel,view.ShowWinPanel);
+        spawnPuzzle.initTable(model.Row, model.Col, model.Cellsize, levels[levelGame].getList(),CountMove,view.SetMoveCount);
     }
     private void IsGameStartedForTheFirstTime()
     {
@@ -45,6 +50,18 @@ public class GameController : MonoBehaviour
     }    
     private void Update()
     {
+        if (spawnPuzzle.CheckAllObjectsHidden(spawnPuzzle.GetNodeDict()) && !spawnPuzzle.getEndGame())
+        {
+            view.ShowWinPanel();
+            levelGame++;
+            PlayerPrefs.SetInt("Level", levelGame);
+            spawnPuzzle.SetEndGame(true);
+        }
+        if(spawnPuzzle.getCountMove() == 0)
+        {
+            spawnPuzzle.SetEndGame(true);
+            view.ShowEndPanel();
+        }    
         Vector3 touchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (Input.GetMouseButtonDown(0))
         {

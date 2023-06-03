@@ -7,40 +7,31 @@ public class SpawnPuzzle : MonoBehaviour
 {
     [SerializeField]
     private GameObject puzzlePrefab;
+    [SerializeField]
+    private Sprite SawSprite, defaultSprite , roTateSprite;
     private int rows;
     private int col;
     private float cellsize;
     private Vector2[,] tables;
     private List<Node> nodes;
     private Dictionary<Node, GameObject> nodesDictObj;
-    private Action<int> SetCountMove;
-    private Action ShowLosePanel;
-    private Action ShowWinPanel;
+    private Action<int> SetCountMoveView;
+    //private Action ShowLosePanel;
     public bool UseHammer;
     public bool UseBomb;
     private bool IsDesTroy=false;
     private int countMove;
-    private bool endGame;
+    private bool endGame=false;
     private float MaxX,MinX,MaxY,MinY;
-    private const string Level = "Level";
-    private int levelGame;
-    private bool check;
-    private void Awake()
-    {
-        check = false;
-    }
     // Start is called before the first frame update
     private void Start()
     {
-        levelGame = PlayerPrefs.GetInt(Level);
         float worldHeight = Camera.main.orthographicSize * 2f;
         float worldWidth = worldHeight * Screen.width / Screen.height;
         MaxX = worldWidth / 2;
         MaxY = worldHeight / 2;
         MinX = -MaxX;
         MinY = -MaxY;
-        countMove = 20;
-        SetCountMove(countMove);
         endGame= false;
         nodesDictObj = new();
         tables = new Vector2[rows, col];
@@ -56,6 +47,7 @@ public class SpawnPuzzle : MonoBehaviour
         foreach (var node in nodes)
         {
             Quaternion quaternion = Quaternion.identity;
+            Sprite sprite = defaultSprite;
             switch (node.NodeType)
             {
                 case NodeType.Left:
@@ -72,25 +64,46 @@ public class SpawnPuzzle : MonoBehaviour
                     break;
                 case NodeType.Saw:
                     quaternion = Quaternion.Euler(0, 0, 0);
+                    sprite = SawSprite;
+                    break;
+                case NodeType.Rotate:
+                    quaternion = Quaternion.Euler(0, 0, 0);
+                    sprite = roTateSprite;
                     break;
             }
             GameObject NodeObj = Instantiate(puzzlePrefab, tables[node.position.x, node.position.y], quaternion);
+            SpriteRenderer spriteRenderer = NodeObj.GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = sprite;
             nodesDictObj.Add(node, NodeObj);
         }
     }
-    public void initTable(int rows, int col, float cellsize, List<Node> nodes, Action<int> SetCountMove, Action ShowLosePanel,Action ShowWinPanel)
+    public void initTable(int rows, int col, float cellsize, List<Node> nodes, int countMove, Action<int> SetCountMoveView)
     {
         this.rows = rows;
         this.col = col;
         this.cellsize = cellsize;
         this.nodes = nodes.Select(n => new Node(n.position, n.NodeType)).ToList();
-        this.SetCountMove = SetCountMove;
-        this.ShowLosePanel = ShowLosePanel;
-        this.ShowWinPanel = ShowWinPanel;
+        this.countMove = countMove;
+        this.SetCountMoveView = SetCountMoveView;
     }
+    public int getCountMove()
+    {
+        return countMove;
+    }    
+    public bool getEndGame()
+    {
+        return this.endGame;
+    }    
+    public void SetEndGame(bool endGame)
+    {
+        this.endGame = endGame;
+    }    
+    public Dictionary<Node, GameObject> GetNodeDict()
+    {
+        return nodesDictObj;
+    }    
     private void ChecKOutScreen(GameObject node)
     {
-
         Vector2 nodePos = node.transform.position;   
         if (nodePos.x > MaxX || nodePos.y > MaxY || nodePos.x < MinX || nodePos.y < MinY) 
         {
@@ -99,15 +112,7 @@ public class SpawnPuzzle : MonoBehaviour
     }
     private void Update()
     {
-        if (CheckAllObjectsHidden(nodesDictObj)&& !check)
-        {
-            ShowWinPanel();
-            levelGame++;
-            PlayerPrefs.SetInt("Level", levelGame);
-            check = true;
-
-        }
-        CheckMoveCount(countMove);
+        //CheckMoveCount(countMove);
         /*  if (CheckAllNodesBlocked(nodes))
           {
               Debug.Log("Không thể di chuyển tất cả các node!");
@@ -117,15 +122,18 @@ public class SpawnPuzzle : MonoBehaviour
     {
         if (endGame) return;
         if (collider2D != null)
+        {
+            Node node;
+            Vector2Int temp = new Vector2Int(Mathf.RoundToInt(collider2D.transform.position.x / cellsize + rows / 2), Mathf.RoundToInt(-collider2D.transform.position.y / cellsize + col / 2));
+            node = nodes.Find(n => n.position == new Vector2(temp.x, temp.y));
+            if (node.NodeType == NodeType.Saw)
             {
-                Node node;
-                Vector2Int temp = new Vector2Int(Mathf.RoundToInt(collider2D.transform.position.x / cellsize + rows / 2), Mathf.RoundToInt(-collider2D.transform.position.y / cellsize + col / 2));
-                node = nodes.Find(n => n.position == new Vector2(temp.x, temp.y));
-                if (node.NodeType != NodeType.Saw)
-                {
-                    countMove--;
-                    SetCountMove(countMove);
-                }
+                return;
+            }  
+            else
+            {
+                countMove--;
+                SetCountMoveView(countMove);
                 if (UseBomb && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
                 {
                     HideAndRemoveSurroundingNodes(node);
@@ -133,7 +141,6 @@ public class SpawnPuzzle : MonoBehaviour
                     nodes.Remove(node);
                     UseBomb = false;
                     return;
-
                 }
                 if (UseHammer && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
                 {
@@ -145,10 +152,6 @@ public class SpawnPuzzle : MonoBehaviour
                 if (node.NodeType == NodeType.Rotate)
                 {
                     RotateSurroundingNodesClockwise(node);
-                }
-                if (node.NodeType == NodeType.Saw)
-                {
-                    return;
                 }
                 Vector2Int movePos = NodeMovePosition(node);
                 Vector2 destinition;
@@ -171,17 +174,9 @@ public class SpawnPuzzle : MonoBehaviour
                     nodes[nodes.IndexOf(node)].position = movePos;
                 }
                 StartCoroutine(MoveNode(nodesDictObj[node], destinition));
-            }
-        
+            }        
+        }       
     }
-    private void CheckMoveCount(int count)
-    {
-        if (count == 0)
-        {
-            endGame = true;
-            ShowLosePanel();
-        }
-    }    
     private void RotateSurroundingNodesClockwise(Node node)
     {
         Vector2Int nodePosition = node.position;
@@ -253,16 +248,16 @@ public class SpawnPuzzle : MonoBehaviour
         switch (node.NodeType)
         {
             case NodeType.Left:
-                direction = new Vector2(-10f, nodePosition.y);
+                direction = new Vector2(MinX-5f, nodePosition.y);
                 break;
             case NodeType.Right:
-                direction = new Vector2(10f, nodePosition.y);
+                direction = new Vector2(MaxY+5f, nodePosition.y);
                 break;
             case NodeType.Up:
-                direction = new Vector2(nodePosition.x, 10f);
+                direction = new Vector2(nodePosition.x, MaxY+5f);
                 break;
             case NodeType.Down:
-                direction = new Vector2(nodePosition.x, -10f);
+                direction = new Vector2(nodePosition.x, MinY-5f);
                 break;
         }
         return direction;
@@ -318,11 +313,11 @@ public class SpawnPuzzle : MonoBehaviour
     IEnumerator DelayedActions(Node node)
     {
         IsDesTroy = false;
-        yield return new WaitForSeconds(0.5f); // Đợi 0.5 giây
+        yield return new WaitForSeconds(0.5f); 
         nodesDictObj[node].SetActive(false);
         nodes.Remove(node);
     }   
-    private bool CheckAllNodesBlocked(List<Node> nodes)
+    public bool CheckAllNodesBlocked(List<Node> nodes)
     {
         foreach (Node node in nodes)
         {
@@ -337,7 +332,7 @@ public class SpawnPuzzle : MonoBehaviour
         }
         return true;
     }
-    private bool CheckAllObjectsHidden(Dictionary<Node, GameObject> dictionary)
+    public bool CheckAllObjectsHidden(Dictionary<Node, GameObject> dictionary)
     {
         foreach (var pair in dictionary)
         {
@@ -349,7 +344,14 @@ public class SpawnPuzzle : MonoBehaviour
                 return false;
             }
         }
-        endGame = true;
         return true;
     }
+    /*    public void CheckMoveCount(int count)
+    {
+        if (count == 0)
+        {
+            endGame = true;
+            ShowLosePanel();
+        }
+    }    */
 }
