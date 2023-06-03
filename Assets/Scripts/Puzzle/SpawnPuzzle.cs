@@ -6,9 +6,9 @@ using UnityEngine;
 public class SpawnPuzzle : MonoBehaviour
 {
     [SerializeField]
-    private GameObject puzzlePrefab;
+    private GameObject puzzlePrefab,hammerPrefab;
     [SerializeField]
-    private Sprite SawSprite, defaultSprite , roTateSprite;
+    private Sprite SawSprite, defaultSprite , roTateSprite,bombSprite;
     private int rows;
     private int col;
     private float cellsize;
@@ -135,14 +135,17 @@ public class SpawnPuzzle : MonoBehaviour
                 SetCountMoveView(countMove);
                 if (UseBomb && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
                 {
-                    HideAndRemoveSurroundingNodes(node);
-                    nodesDictObj[node].SetActive(false);
-                    nodes.Remove(node);
-                    UseBomb = false;
+                    SpriteRenderer spriteRenderer = nodesDictObj[node].GetComponent<SpriteRenderer>();
+                    spriteRenderer.sprite = bombSprite;
+                    StartCoroutine(HideAndRemoveSurroundingNodes(node));
+                    //HideAndRemoveSurroundingNodes(node);                                
                     return;
                 }
                 if (UseHammer && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
-                {
+                {        
+                    Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    mousePosition.z = 0;
+                    StartCoroutine(SpawnHammerAndDestroy(mousePosition));            
                     nodesDictObj[node].SetActive(false);
                     nodes.Remove(node);
                     UseHammer = false;
@@ -175,6 +178,12 @@ public class SpawnPuzzle : MonoBehaviour
                 StartCoroutine(MoveNode(nodesDictObj[node], destinition));
             }        
         }       
+    }
+    private IEnumerator SpawnHammerAndDestroy(Vector3 position)
+    {
+        GameObject hammer = Instantiate(hammerPrefab, position, Quaternion.identity);
+        yield return new WaitForSeconds(0.5f);
+        Destroy(hammer);
     }
     private void RotateSurroundingNodesClockwise(Node node)
     {
@@ -215,8 +224,12 @@ public class SpawnPuzzle : MonoBehaviour
             //nodesDictObj[nodeLeft].transform.position = tables[positionUp.x, positionUp.y];       
         }
     }
-    private void HideAndRemoveSurroundingNodes(Node node)
+    private IEnumerator HideAndRemoveSurroundingNodes(Node node)
     {
+        yield return new WaitForSeconds(0.5f);
+        nodesDictObj[node].SetActive(false);
+        nodes.Remove(node);
+        UseBomb = false;
         Vector2Int nodePosition = node.position;
         List<Vector2Int> positionsToRemove = new List<Vector2Int>();
         for (int i = nodePosition.x - 1; i <= nodePosition.x + 1; i++)
