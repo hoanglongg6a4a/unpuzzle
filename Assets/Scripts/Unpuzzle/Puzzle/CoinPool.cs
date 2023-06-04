@@ -24,11 +24,9 @@ public class CoinPool : MonoBehaviour
     public void Init(int poolSize/*,Action<int>setCoin*/)
     {
         this.poolSize = poolSize;
-      /*  this.SetCoin = setCoin;*/
     }
     public CoinReward GetPooledCoin()
     {
-        Debug.Log(coinPool.Count);
         foreach (CoinReward coin in coinPool)
         {
             if (!coin.gameObject.activeInHierarchy)

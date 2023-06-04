@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 public class SpawnPuzzle : MonoBehaviour
 {
@@ -122,10 +123,10 @@ public class SpawnPuzzle : MonoBehaviour
     private void Update()
     {
         //CheckMoveCount(countMove);
-        /*  if (CheckAllNodesBlocked(nodes))
-          {
-              Debug.Log("Không thể di chuyển tất cả các node!");
-          }*/
+        if (CheckAllNodesBlocked(nodes) && !endGame)
+        {
+            Debug.Log("Không thể di chuyển tất cả các node!");
+        }
     }
     public void TouchAction(Collider2D collider2D)
     {
@@ -168,7 +169,7 @@ public class SpawnPuzzle : MonoBehaviour
                 Vector2Int movePos = NodeMovePosition(node);
                 Vector2 destinition;
                 if (movePos == node.position)
-                {
+                {                   
                     destinition = tables[movePos.x, movePos.y];
                 }
                 else if (movePos.x < 0 || movePos.x > 100 || movePos.y < 0 && movePos.y > 100)
@@ -258,7 +259,7 @@ public class SpawnPuzzle : MonoBehaviour
         foreach (Vector2Int position in positionsToRemove)
         {
             Node surroundingNode = nodes.Find(n => n.position == position);
-            if (surroundingNode != null)
+            if (surroundingNode != null && surroundingNode.NodeType != NodeType.Saw && surroundingNode.NodeType !=  NodeType.Rotate)
             {
                 nodesDictObj[surroundingNode].SetActive(false);
                 nodes.Remove(surroundingNode);
@@ -333,7 +334,7 @@ public class SpawnPuzzle : MonoBehaviour
         }
         return Vector2Int.one * 999;
     }
-    IEnumerator DelayedActions(Node node)
+    private IEnumerator DelayedActions(Node node)
     {
         isDesTroy = false;
         yield return new WaitForSeconds(0.5f); 
@@ -342,6 +343,7 @@ public class SpawnPuzzle : MonoBehaviour
     }   
     public bool CheckAllNodesBlocked(List<Node> nodes)
     {
+        bool initialIsDestroy = isDesTroy; 
         foreach (Node node in nodes)
         {
             if (node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
@@ -349,10 +351,12 @@ public class SpawnPuzzle : MonoBehaviour
                 Vector2Int movePosition = NodeMovePosition(node);
                 if (movePosition == Vector2Int.one * 999)
                 {
+                    isDesTroy = initialIsDestroy; 
                     return false;
                 }
             }
         }
+        isDesTroy = initialIsDestroy;
         return true;
     }
     public bool CheckAllObjectsHidden(Dictionary<Node, GameObject> dictionary)
