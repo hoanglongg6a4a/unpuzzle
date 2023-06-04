@@ -123,10 +123,10 @@ public class SpawnPuzzle : MonoBehaviour
     private void Update()
     {
         //CheckMoveCount(countMove);
-        if (CheckAllNodesBlocked(nodes) && !endGame)
+       /* if (CheckAllNodesBlocked(nodes) && !endGame)
         {
             Debug.Log("Không thể di chuyển tất cả các node!");
-        }
+        }*/
     }
     public void TouchAction(Collider2D collider2D)
     {
@@ -168,6 +168,10 @@ public class SpawnPuzzle : MonoBehaviour
                 }
                 Vector2Int movePos = NodeMovePosition(node);
                 Vector2 destinition;
+                if (isDesTroy)
+                {
+                    StartCoroutine(DelayedActions(node));
+                }
                 if (movePos == node.position)
                 {                   
                     destinition = tables[movePos.x, movePos.y];
@@ -178,11 +182,7 @@ public class SpawnPuzzle : MonoBehaviour
                     nodes.Remove(node);
                 }
                 else
-                {
-                    if (isDesTroy)
-                    {
-                        StartCoroutine(DelayedActions(node));
-                    }
+                {                 
                     destinition = tables[movePos.x, movePos.y];
                     nodes[nodes.IndexOf(node)].position = movePos;
                 }
