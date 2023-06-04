@@ -21,12 +21,19 @@ public class GameConfig : MonoBehaviour
     [Tooltip("Cell Size")]
     [SerializeField]
     private float cellsize = 0.9f;
-
+    #endregion
+    #region Coin
+    [Header("POOLCOIN")]
+    [Tooltip("PoolSize")]
+    [SerializeField]
+    private int poolSize = 10;
+    #endregion
     public float Speed { get => speed; set => speed = value; }
     public int Row { get => row; set => row = value; }
     public int Col { get => col; set => col = value; }
     public float Cellsize { get => cellsize; set => cellsize = value; }
-    #endregion
+    public int PoolSize { get => poolSize; set => poolSize = value; }
+  
 
 
 }

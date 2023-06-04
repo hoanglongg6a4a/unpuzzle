@@ -34,7 +34,7 @@ public class GameController : MonoBehaviour
         //IsGameStartedForTheFirstTime();
         levelGame = PlayerPrefs.GetInt(Level);
         spawnPuzzle.InitTable(model.Row, model.Col, model.Cellsize, levels[levelGame].getList(),countMove,view.SetMoveCount,view.SetTopPanel);
-        coinPool.Init(10);
+        coinPool.Init(model.PoolSize);
     }
     private void IsGameStartedForTheFirstTime()
     {
@@ -46,12 +46,12 @@ public class GameController : MonoBehaviour
     }
     public void UseHammer()
     {
-        spawnPuzzle.UseHammer = true;
+        spawnPuzzle.SetUseHammer(true);
         view.SetTopPanel(false,true,tileUseHammer);
     }
     public void UseBomb()
     {
-        spawnPuzzle.UseBomb = true;
+        spawnPuzzle.SetUseBomb(true);
         view.SetTopPanel(false,true,tileUseBomb);
     }
     public void GetReward()

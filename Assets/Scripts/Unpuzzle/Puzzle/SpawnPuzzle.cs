@@ -21,8 +21,8 @@ public class SpawnPuzzle : MonoBehaviour
     private int countMove;
     private bool endGame=false;
     private float maxX,minX,maxY,minY;
-    public bool UseHammer;  // Dang Test nen chua chinh lai private 
-    public bool UseBomb;    // Dang Test nen chua chinh lai private 
+    public bool useHammer;  // Dang Test nen chua chinh lai private 
+    public bool useBomb;    // Dang Test nen chua chinh lai private 
     // Start is called before the first frame update
     private void Start()
     {
@@ -87,6 +87,14 @@ public class SpawnPuzzle : MonoBehaviour
         this.SetCountMoveView = SetCountMoveView;
         this.setTopPanel = setTopPanel;
     }
+    public void SetUseHammer(bool status)
+    {
+        this.useHammer = status;
+    }
+    public void SetUseBomb(bool status)
+    {
+        this.useBomb = status;
+    }
     public int GetCountMove()
     {
         return countMove;
@@ -135,7 +143,7 @@ public class SpawnPuzzle : MonoBehaviour
             {
                 countMove--;
                 SetCountMoveView(countMove);
-                if (UseBomb && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
+                if (useBomb && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
                 {
                     SpriteRenderer spriteRenderer = nodesDictObj[node].GetComponent<SpriteRenderer>();
                     spriteRenderer.sprite = bombSprite;
@@ -143,14 +151,14 @@ public class SpawnPuzzle : MonoBehaviour
                     //HideAndRemoveSurroundingNodes(node);                                
                     return;
                 }
-                if (UseHammer && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
+                if (useHammer && node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate)
                 {        
                     Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     mousePosition.z = 0;
                     StartCoroutine(SpawnHammerAndDestroy(mousePosition));            
                     nodesDictObj[node].SetActive(false);
                     nodes.Remove(node);
-                    UseHammer = false;
+                    useHammer = false;
                     return;
                 }
                 if (node.NodeType == NodeType.Rotate)
@@ -233,7 +241,7 @@ public class SpawnPuzzle : MonoBehaviour
         nodesDictObj[node].SetActive(false);
         nodes.Remove(node);
         setTopPanel(true, false, "");
-        UseBomb = false;
+        useBomb = false;
         Vector2Int nodePosition = node.position;
         List<Vector2Int> positionsToRemove = new List<Vector2Int>();
         for (int i = nodePosition.x - 1; i <= nodePosition.x + 1; i++)
