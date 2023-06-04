@@ -8,7 +8,7 @@ public class SpawnPuzzle : MonoBehaviour
     [SerializeField]
     private GameObject puzzlePrefab,hammerPrefab;
     [SerializeField]
-    private Sprite SawSprite, defaultSprite , roTateSprite,bombSprite;
+    private Sprite sawSprite, defaultSprite , roTateSprite,bombSprite;
     private int rows;
     private int col;
     private float cellsize;
@@ -16,10 +16,11 @@ public class SpawnPuzzle : MonoBehaviour
     private List<Node> nodes;
     private Dictionary<Node, GameObject> nodesDictObj;
     private Action<int> SetCountMoveView;
-    private bool IsDesTroy=false;
+    private Action<bool,bool,string> setTopPanel;
+    private bool isDesTroy=false;
     private int countMove;
     private bool endGame=false;
-    private float MaxX,MinX,MaxY,MinY;
+    private float maxX,minX,maxY,minY;
     public bool UseHammer;  // Dang Test nen chua chinh lai private 
     public bool UseBomb;    // Dang Test nen chua chinh lai private 
     // Start is called before the first frame update
@@ -27,10 +28,10 @@ public class SpawnPuzzle : MonoBehaviour
     {
         float worldHeight = Camera.main.orthographicSize * 2f;
         float worldWidth = worldHeight * Screen.width / Screen.height;
-        MaxX = worldWidth / 2;
-        MaxY = worldHeight / 2;
-        MinX = -MaxX;
-        MinY = -MaxY;
+        maxX = worldWidth / 2;
+        maxY = worldHeight / 2;
+        minX = -maxX;
+        minY = -maxY;
         endGame= false;
         nodesDictObj = new();
         tables = new Vector2[rows, col];
@@ -63,7 +64,7 @@ public class SpawnPuzzle : MonoBehaviour
                     break;
                 case NodeType.Saw:
                     quaternion = Quaternion.Euler(0, 0, 0);
-                    sprite = SawSprite;
+                    sprite = sawSprite;
                     break;
                 case NodeType.Rotate:
                     quaternion = Quaternion.Euler(0, 0, 0);
@@ -76,7 +77,7 @@ public class SpawnPuzzle : MonoBehaviour
             nodesDictObj.Add(node, NodeObj);
         }
     }
-    public void initTable(int rows, int col, float cellsize, List<Node> nodes, int countMove, Action<int> SetCountMoveView)
+    public void InitTable(int rows, int col, float cellsize, List<Node> nodes, int countMove, Action<int> SetCountMoveView, Action<bool, bool, string> setTopPanel)
     {
         this.rows = rows;
         this.col = col;
@@ -84,12 +85,13 @@ public class SpawnPuzzle : MonoBehaviour
         this.nodes = nodes.Select(n => new Node(n.position, n.NodeType)).ToList();
         this.countMove = countMove;
         this.SetCountMoveView = SetCountMoveView;
+        this.setTopPanel = setTopPanel;
     }
-    public int getCountMove()
+    public int GetCountMove()
     {
         return countMove;
     }    
-    public bool getEndGame()
+    public bool GetEndGame()
     {
         return this.endGame;
     }    
@@ -104,7 +106,7 @@ public class SpawnPuzzle : MonoBehaviour
     private void ChecKOutScreen(GameObject node)
     {
         Vector2 nodePos = node.transform.position;   
-        if (nodePos.x > MaxX || nodePos.y > MaxY || nodePos.x < MinX || nodePos.y < MinY) 
+        if (nodePos.x > maxX || nodePos.y > maxY || nodePos.x < minX || nodePos.y < minY) 
         {
             node.SetActive(false);
         }
@@ -168,7 +170,7 @@ public class SpawnPuzzle : MonoBehaviour
                 }
                 else
                 {
-                    if (IsDesTroy)
+                    if (isDesTroy)
                     {
                         StartCoroutine(DelayedActions(node));
                     }
@@ -184,6 +186,7 @@ public class SpawnPuzzle : MonoBehaviour
         GameObject hammer = Instantiate(hammerPrefab, position, Quaternion.identity);
         yield return new WaitForSeconds(0.5f);
         Destroy(hammer);
+        setTopPanel(true, false, "");
     }
     private void RotateSurroundingNodesClockwise(Node node)
     {
@@ -229,6 +232,7 @@ public class SpawnPuzzle : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         nodesDictObj[node].SetActive(false);
         nodes.Remove(node);
+        setTopPanel(true, false, "");
         UseBomb = false;
         Vector2Int nodePosition = node.position;
         List<Vector2Int> positionsToRemove = new List<Vector2Int>();
@@ -260,16 +264,16 @@ public class SpawnPuzzle : MonoBehaviour
         switch (node.NodeType)
         {
             case NodeType.Left:
-                direction = new Vector2(MinX-5f, nodePosition.y);
+                direction = new Vector2(minX-2f, nodePosition.y);
                 break;
             case NodeType.Right:
-                direction = new Vector2(MaxY+5f, nodePosition.y);
+                direction = new Vector2(maxY+2f, nodePosition.y);
                 break;
             case NodeType.Up:
-                direction = new Vector2(nodePosition.x, MaxY+5f);
+                direction = new Vector2(nodePosition.x, maxY+2f);
                 break;
             case NodeType.Down:
-                direction = new Vector2(nodePosition.x, MinY-5f);
+                direction = new Vector2(nodePosition.x, minY-2f);
                 break;
         }
         return direction;
@@ -280,7 +284,6 @@ public class SpawnPuzzle : MonoBehaviour
         {
             Vector2 newPosition = Vector2.MoveTowards(node.transform.position, destination, 8 * Time.deltaTime);
             node.transform.position = newPosition;
-
             yield return null;
         }
         ChecKOutScreen(node);
@@ -314,7 +317,7 @@ public class SpawnPuzzle : MonoBehaviour
             {
                 if (temp.NodeType == NodeType.Saw)
                 {
-                    IsDesTroy= true;              
+                    isDesTroy= true;              
                     //return curPos -= direction;
                 }
                 return curPos -= direction;
@@ -324,7 +327,7 @@ public class SpawnPuzzle : MonoBehaviour
     }
     IEnumerator DelayedActions(Node node)
     {
-        IsDesTroy = false;
+        isDesTroy = false;
         yield return new WaitForSeconds(0.5f); 
         nodesDictObj[node].SetActive(false);
         nodes.Remove(node);
@@ -350,7 +353,6 @@ public class SpawnPuzzle : MonoBehaviour
         {
             Node node = pair.Key;
             GameObject obj = pair.Value;
-
             if (node.NodeType != NodeType.Saw && node.NodeType != NodeType.Rotate && obj.activeSelf)
             {
                 return false;
@@ -358,12 +360,4 @@ public class SpawnPuzzle : MonoBehaviour
         }
         return true;
     }
-    /*    public void CheckMoveCount(int count)
-    {
-        if (count == 0)
-        {
-            endGame = true;
-            ShowLosePanel();
-        }
-    }    */
 }
