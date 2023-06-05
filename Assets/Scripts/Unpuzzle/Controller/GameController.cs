@@ -28,8 +28,13 @@ public class GameController : MonoBehaviour
     {
         Application.targetFrameRate= 60;
         IsGameStartedForTheFirstTime();
-        PlayerPrefs.SetInt(Level, 6);
         levelGame = PlayerPrefs.GetInt(Level);
+        // Only have 6 level :V
+        if(levelGame > 6  )
+        {
+            PlayerPrefs.SetInt(Level, 0);
+            levelGame = PlayerPrefs.GetInt(Level);
+        }
         if (levels[levelGame] != null)
         {
             countMove = levels[levelGame].getMoveCount();

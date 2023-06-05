@@ -18,8 +18,8 @@ public class CoinReward : MonoBehaviour
             if (transform.position == target.position)
             {
                 transform.position = oldPos;
-                isMoving = false;
                 gameObject.SetActive(false);
+                isMoving = false;
             }
         }
     }
