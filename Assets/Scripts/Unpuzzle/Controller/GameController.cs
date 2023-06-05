@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,14 +26,18 @@ public class GameController : MonoBehaviour
     private string tileUseHammer = "Tap a tile to place a Destroy";
     private void Awake()
     {
-        countMove = 20;
-        coinReward = 20;
-        view.SetMoveCount(countMove);
-        PlayerPrefs.SetInt(Level, 0);
-        //IsGameStartedForTheFirstTime();
+        Application.targetFrameRate= 60;
+        IsGameStartedForTheFirstTime();
+        PlayerPrefs.SetInt(Level, 6);
         levelGame = PlayerPrefs.GetInt(Level);
-        spawnPuzzle.InitTable(model.Row, model.Col, model.Cellsize, levels[levelGame].getList(),countMove,view.SetMoveCount,view.SetTopPanel);
-        coinPool.Init(model.PoolSize);
+        if (levels[levelGame] != null)
+        {
+            countMove = levels[levelGame].getMoveCount();
+            coinReward = levels[levelGame].getCoinReward();
+            view.SetMoveCount(countMove);
+            spawnPuzzle.InitTable(model.Row, model.Col, model.Cellsize, levels[levelGame].getList(), countMove, view.SetMoveCount, view.SetTopPanel);
+            coinPool.Init(model.PoolSize);
+        }
     }
     private void IsGameStartedForTheFirstTime()
     {
@@ -65,13 +68,13 @@ public class GameController : MonoBehaviour
             CoinReward coin = coinPool.GetPooledCoin();
             coin.ShowReward(targetCoin.transform);
             view.SetCoin();
-            yield return new WaitForSeconds(0.1f); // Thời gian chờ giữa các đồng xu bay lên
+            yield return new WaitForSeconds(0.1f); 
         }
-        SceneManager.LoadScene("GamePlay");
+        SceneManager.LoadScene(model.SenceGamePlayName);
     }
     public void Restart()
     {
-        SceneManager.LoadScene("GamePlay");
+        SceneManager.LoadScene(model.SenceGamePlayName);
     }    
     private void Update()
     {   

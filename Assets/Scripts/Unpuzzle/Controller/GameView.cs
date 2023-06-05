@@ -22,7 +22,7 @@ public class GameView : MonoBehaviour
     {
         int levelGame = PlayerPrefs.GetInt(Level);
         toTalCoin = PlayerPrefs.GetInt(TotalCoin);
-        levelNum.text = levelGame.ToString();
+        levelNum.text = "Level: " + levelGame.ToString(); 
         coinText.text = toTalCoin.ToString();
     }
     public void SetTopPanel(bool statusPanel,bool statusText,string text)

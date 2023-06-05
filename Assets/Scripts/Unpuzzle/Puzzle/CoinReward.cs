@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 public class CoinReward : MonoBehaviour
 { 
-    private float speed = 10f; // T?c ?? bay c?a ??ng xu
-    private Transform target; // V? trí ?ích mà ??ng xu bay t?i
-    private bool isMoving = false; // Bi?n xác ??nh xem ??ng xu ?ang di chuy?n hay không
+    private float speed = 15f; 
+    private Transform target; 
+    private bool isMoving = false; 
     private Vector2 oldPos;
     public void Start()
     {
@@ -18,7 +15,6 @@ public class CoinReward : MonoBehaviour
         {
             Vector2 newPos = Vector3.MoveTowards(transform.position, target.position, speed*Time.deltaTime);
             transform.position = newPos;
-            // N?u ??ng xu ?ã ??n v? trí target, x? lý s? ki?n nh?n th??ng
             if (transform.position == target.position)
             {
                 transform.position = oldPos;

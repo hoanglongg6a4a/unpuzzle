@@ -6,7 +6,7 @@ public class GameConfig : MonoBehaviour
     [Space(8.0f)]
     [Header("Game Play")]
     #endregion
-
+    private const string senceGamePlayName = "GamePlay";
     #region Puzzle
     [Header("PUZZLW STATUS")]
     [Tooltip("Speed")]
@@ -27,6 +27,8 @@ public class GameConfig : MonoBehaviour
     [Tooltip("PoolSize")]
     [SerializeField]
     private int poolSize = 10;
+
+    public string SenceGamePlayName => senceGamePlayName;
     #endregion
     public float Speed { get => speed; set => speed = value; }
     public int Row { get => row; set => row = value; }

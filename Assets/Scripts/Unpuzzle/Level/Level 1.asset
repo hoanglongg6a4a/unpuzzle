@@ -33,3 +33,5 @@ MonoBehaviour:
     NodeType: 2
   - position: {x: 2, y: 1}
     NodeType: 6
+  moveCount: 30
+  coinReward: 20

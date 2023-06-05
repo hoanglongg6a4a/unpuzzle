@@ -9,7 +9,6 @@ public class CoinPool : MonoBehaviour
     private CoinReward coinPrefab;
     private int poolSize ;
     private List<CoinReward> coinPool;
-    private Action<int> SetCoin;
     private void Start()
     {
         coinPool = new List<CoinReward>();
