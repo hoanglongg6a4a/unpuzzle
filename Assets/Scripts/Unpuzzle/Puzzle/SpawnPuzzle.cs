@@ -21,11 +21,13 @@ public class SpawnPuzzle : MonoBehaviour
     private int countMove;
     private bool endGame=false;
     private float maxX,minX,maxY,minY;
-    public bool useHammer;  // Dang Test nen chua chinh lai private 
-    public bool useBomb;    // Dang Test nen chua chinh lai private 
+    private bool useHammer;  // Dang Test nen chua chinh lai private 
+    private bool useBomb;    // Dang Test nen chua chinh lai private 
+    private bool useRotate;
     // Start is called before the first frame update
     private void Start()
     {
+        useRotate= false;
         float worldHeight = Camera.main.orthographicSize * 2f;
         float worldWidth = worldHeight * Screen.width / Screen.height;
         maxX = worldWidth / 2;
@@ -161,8 +163,8 @@ public class SpawnPuzzle : MonoBehaviour
                     useHammer = false;
                     return;
                 }
-                if (node.NodeType == NodeType.Rotate)
-                {
+                if (node.NodeType == NodeType.Rotate && !useRotate)
+                {                  
                     RotateSurroundingNodesClockwise(node);
                 }
                 Vector2Int movePos = NodeMovePosition(node);
@@ -198,42 +200,42 @@ public class SpawnPuzzle : MonoBehaviour
     }
     private void RotateSurroundingNodesClockwise(Node node)
     {
-        Vector2Int nodePosition = node.position;
-        // Save Position around node
-        Vector2Int positionUp = nodePosition + Vector2Int.down;
-        Vector2Int positionRight = nodePosition + Vector2Int.right;
-        Vector2Int positionDown = nodePosition + Vector2Int.up;
-        Vector2Int positionLeft = nodePosition + Vector2Int.left;
-        Node nodeUp = nodes.Find(n => n.position == positionUp);
-        Node nodeRight = nodes.Find(n => n.position == positionRight);
-        Node nodeDown = nodes.Find(n => n.position == positionDown);
-        Node nodeLeft = nodes.Find(n => n.position == positionLeft);
-        // Delete position node around and move
-        if (nodeUp != null)
+        if (!useRotate)
         {
-            //nodesDictObj[nodeUp].transform.position = tables[positionRight.x, positionRight.y];
-            nodes[nodes.IndexOf(nodeUp)].position = positionRight;
-            StartCoroutine(MoveNode(nodesDictObj[nodeUp], tables[positionRight.x, positionRight.y]));
+            useRotate = true;
+            Vector2Int nodePosition = node.position;
+            // Save Position around node
+            Vector2Int positionUp = nodePosition + Vector2Int.down;
+            Vector2Int positionRight = nodePosition + Vector2Int.right;
+            Vector2Int positionDown = nodePosition + Vector2Int.up;
+            Vector2Int positionLeft = nodePosition + Vector2Int.left;
+            Node nodeUp = nodes.Find(n => n.position == positionUp);
+            Node nodeRight = nodes.Find(n => n.position == positionRight);
+            Node nodeDown = nodes.Find(n => n.position == positionDown);
+            Node nodeLeft = nodes.Find(n => n.position == positionLeft);
+            // Delete position node around and move
+            if (nodeUp != null)
+            {
+                nodes[nodes.IndexOf(nodeUp)].position = positionRight;
+                StartCoroutine(MoveNode(nodesDictObj[nodeUp], tables[positionRight.x, positionRight.y]));
+            }
+            if (nodeRight != null)
+            {
+                nodes[nodes.IndexOf(nodeRight)].position = positionDown;
+                StartCoroutine(MoveNode(nodesDictObj[nodeRight], tables[positionDown.x, positionDown.y]));
+            }
+            if (nodeDown != null)
+            {
+                nodes[nodes.IndexOf(nodeDown)].position = positionLeft;
+                StartCoroutine(MoveNode(nodesDictObj[nodeDown], tables[positionLeft.x, positionLeft.y]));
+            }
+            if (nodeLeft != null)
+            {
+                nodes[nodes.IndexOf(nodeLeft)].position = positionUp;
+                StartCoroutine(MoveNode(nodesDictObj[nodeLeft], tables[positionUp.x, positionUp.y]));
+            }
         }
-        if (nodeRight != null)
-        {
-            //nodesDictObj[nodeRight].transform.position = tables[positionDown.x, positionDown.y];
-            nodes[nodes.IndexOf(nodeRight)].position = positionDown;
-            StartCoroutine(MoveNode(nodesDictObj[nodeRight], tables[positionDown.x, positionDown.y]));
-        }
-        if (nodeDown != null)
-        {
-            nodes[nodes.IndexOf(nodeDown)].position = positionLeft;
-            StartCoroutine(MoveNode(nodesDictObj[nodeDown], tables[positionLeft.x, positionLeft.y]));
-            // nodesDictObj[nodeDown].transform.position = tables[positionLeft.x, positionLeft.y];
-
-        }
-        if (nodeLeft != null)
-        {
-            nodes[nodes.IndexOf(nodeLeft)].position = positionUp;
-            StartCoroutine(MoveNode(nodesDictObj[nodeLeft], tables[positionUp.x, positionUp.y]));
-            //nodesDictObj[nodeLeft].transform.position = tables[positionUp.x, positionUp.y];       
-        }
+        useRotate= false;
     }
     private IEnumerator HideAndRemoveSurroundingNodes(Node node)
     {
@@ -290,7 +292,7 @@ public class SpawnPuzzle : MonoBehaviour
     {
         while (node.transform.position != destination)
         {
-            Vector2 newPosition = Vector2.MoveTowards(node.transform.position, destination, 8 * Time.deltaTime);
+            Vector2 newPosition = Vector2.MoveTowards(node.transform.position, destination, 15 * Time.deltaTime);
             node.transform.position = newPosition;
             yield return null;
         }

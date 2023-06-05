@@ -1,7 +1,8 @@
 using UnityEngine;
 public class CoinReward : MonoBehaviour
-{ 
-    private float speed = 15f; 
+{
+    [SerializeField] 
+    private float speed = 100f; 
     private Transform target; 
     private bool isMoving = false; 
     private Vector2 oldPos;

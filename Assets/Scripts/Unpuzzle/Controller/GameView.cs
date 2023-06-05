@@ -10,6 +10,8 @@ public class GameView : MonoBehaviour
     [SerializeField] private GameObject topButtonPanel;
     [SerializeField] private GameObject skinPanel;
     [SerializeField] private GameObject panelWhenUseSkill;
+    [SerializeField] private GameObject Tab1;
+    [SerializeField] private GameObject Tab2;
     [SerializeField] private TextMeshProUGUI coinNum;
     [SerializeField] private TextMeshProUGUI moveCount;
     [SerializeField] private TextMeshProUGUI textWhenUseSkill;
@@ -41,7 +43,7 @@ public class GameView : MonoBehaviour
     }
     public void SetMoveCount(int count)
     {
-        moveCount.text = count.ToString();
+        moveCount.text = count.ToString()+" Moves";
     }
     public void SetCoin()
     {
