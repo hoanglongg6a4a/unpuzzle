@@ -27,6 +27,10 @@ public class GameView : MonoBehaviour
         levelNum.text = "Level: " + levelGame.ToString(); 
         coinText.text = toTalCoin.ToString();
     }
+    public void ShowTab1()
+    {
+        
+    }
     public void SetTopPanel(bool statusPanel,bool statusText,string text)
     {
         topButtonPanel.SetActive(statusPanel);
