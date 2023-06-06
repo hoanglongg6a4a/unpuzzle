@@ -28,7 +28,7 @@ public class GameController : MonoBehaviour
     {
         Application.targetFrameRate= 60;
         IsGameStartedForTheFirstTime();
-        //PlayerPrefs.SetInt(Level, 0);
+        PlayerPrefs.SetInt(Level, 0);
         levelGame = PlayerPrefs.GetInt(Level);
         // Only have 6 level :V
         if(levelGame > 6  )
